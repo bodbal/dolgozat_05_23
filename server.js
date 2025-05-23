@@ -13,6 +13,8 @@ const db = new sqlite3.Database('notes.db');
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    content TEXT
 
   )`);
 });
@@ -32,21 +34,20 @@ app.get('/api/notes/:id', (req, res) => {
 });
 
 app.post('/api/notes', (req, res) => {
-  const { szerzo, cim,kategoria, tartalom, kelte, frissitett } = req.body;
-  if (!band || !title || !year || !genre) return res.status(400).send('Invalid input');
-  db.run('INSERT INTO notes (szerzo, cim,kategoria, tartalom, kelte, frissitett) VALUES (?, ?, ?, ?)', [szerzo, cim,kategoria, tartalom, kelte, frissitett], function (err) {
+  const {title, content } = req.body;
+  if (!title || !content) return res.status(400).send('Invalid input');
+  db.run('INSERT INTO notes (title, content) VALUES (?, ?, ?, ?)', [title, content], function (err) {
     if (err) return res.status(500).send(err);
     res.json({ id: this.lastID });
   });
 });
 
-app.put('/api/notes/:id', (req, res) => {
-
-
-});
 
 app.delete('/api/notes/:id', (req, res) => {
-
+  db.delete('DELETE FROM notes (title, content) VALUES (?, ?, ?, ?)', [title, content], function (err) {
+    if (err) return res.status(500).send(err);
+    res.json({ id: this.lastID });
+  });
 });
 
 app.listen(port, () => console.log(`Server listening at http://localhost:${port}`));
